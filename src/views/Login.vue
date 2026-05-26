@@ -179,7 +179,7 @@ const handleLogin = async () => {
             <ShieldCheck class="w-4 h-4 text-emerald-500 mr-1" />
             Keamanan SSL Terenkripsi
           </span>
-          <span class="text-slate-400">Not a member? <a href="#" class="text-primary font-bold hover:underline">Hubungi Kami</a></span>
+          <span class="text-slate-400">Not a member? <a href="https://wa.me/6285879584257?text=Halo%20Develzy%20SaaS%20Education%20ERP%2C%20saya%20tertarik%20dengan%20platform%20ini%20dan%20ingin%20menanyakan%20informasi%20lebih%20lanjut%20mengenai%20pendaftaran%20sekolah%20kami." target="_blank" class="text-primary font-bold hover:underline">Hubungi Kami</a></span>
         </div>
       </div>
     </div>
