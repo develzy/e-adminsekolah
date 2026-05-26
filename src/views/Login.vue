@@ -30,6 +30,10 @@ const handleLogin = async () => {
         role: response.data.role,
         email: response.data.email
       })
+      if (response.data.school) {
+        authStore.setSchool(response.data.school)
+        localStorage.setItem('activeSchool', JSON.stringify(response.data.school))
+      }
       router.push('/dashboard')
     }
   } catch (error: any) {

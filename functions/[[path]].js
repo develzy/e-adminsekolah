@@ -27,26 +27,39 @@ app.get('/stats', async (c) => {
 app.post('/auth/login', async (c) => {
     const body = await c.req.json();
     if (body.email && body.password) {
-        let role = 'guru';
-        let name = 'Guru';
-        if (body.email.includes('super')) {
-            role = 'super_admin';
-            name = 'Super Admin';
+        const msgBuffer = new TextEncoder().encode(body.password);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const incomingHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        try {
+            const user = await c.env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(body.email).first();
+            if (user && user.password_hash === incomingHash) {
+                let school = null;
+                if (user.school_id) {
+                    school = await c.env.DB.prepare('SELECT * FROM schools WHERE id = ?').bind(user.school_id).first();
+                }
+                const payload = {
+                    email: user.email,
+                    role: user.role,
+                    exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24, // 24 hours
+                };
+                const secret = c.env.JWT_SECRET || 'fallback-secret-for-dev';
+                const token = await sign(payload, secret);
+                return c.json({
+                    token,
+                    name: user.name,
+                    role: user.role,
+                    email: user.email,
+                    user: { email: user.email, name: user.name, role: user.role },
+                    school: school
+                });
+            }
         }
-        else if (body.email.includes('admin')) {
-            role = 'admin_sekolah';
-            name = 'Admin Sekolah';
+        catch (error) {
+            return c.json({ error: 'Database authentication error', details: error.message }, 500);
         }
-        const payload = {
-            email: body.email,
-            role: role,
-            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24, // 24 hours
-        };
-        const secret = c.env.JWT_SECRET || 'fallback-secret-for-dev';
-        const token = await sign(payload, secret);
-        return c.json({ token, name, role, email: body.email, user: { email: body.email, name, role } });
     }
-    return c.json({ error: 'Invalid credentials' }, 401);
+    return c.json({ error: 'Email atau password salah.' }, 401);
 });
 // Protected routes middleware
 // app.use('/*', jwt({ secret: (c) => c.env.JWT_SECRET }))
