@@ -1,0 +1,42 @@
+{
+  "name": "system-penilaian",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:api": "wrangler pages dev public --port 8788",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@motionone/vue": "^10.16.4",
+    "@tanstack/vue-table": "^8.21.3",
+    "@vueuse/core": "^14.3.0",
+    "apexcharts": "^5.13.0",
+    "axios": "^1.16.1",
+    "hono": "^4.12.23",
+    "html2pdf.js": "^0.14.0",
+    "jspdf": "^4.2.1",
+    "lucide-vue-next": "^1.0.0",
+    "pinia": "^3.0.4",
+    "vue": "^3.5.34",
+    "vue-router": "^5.0.7",
+    "vue3-apexcharts": "^1.11.1",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260526.1",
+    "@types/node": "^24.12.4",
+    "@vitejs/plugin-vue": "^6.0.6",
+    "@vue/tsconfig": "^0.9.1",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.1",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.12",
+    "vue-tsc": "^3.2.8",
+    "wrangler": "^4.94.0"
+  }
+}
