@@ -4,13 +4,18 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/store/auth'
 import { 
   Users, Building, GraduationCap, BrainCircuit, TrendingUp, Calendar, 
-  Activity, Cpu, Database, Layers, CreditCard, Server, Zap, Lock, HardDrive
+  Activity, Cpu, Database, Layers, CreditCard, Server, Zap, Lock, HardDrive,
+  X, ShieldCheck
 } from 'lucide-vue-next'
 import VueApexCharts from 'vue3-apexcharts'
 import axios from 'axios'
 
 const router = useRouter()
 const authStore = useAuthStore()
+
+// Modal states for Developer Quick Actions
+const isDeploymentModalOpen = ref(false)
+const isSecurityModalOpen = ref(false)
 
 // Realtime Clock
 const currentTime = ref(new Date().toLocaleTimeString('id-ID'))
@@ -217,11 +222,11 @@ const regularSeries = [
           <Phone class="w-6 h-6 text-emerald-600 group-hover:scale-110 transition-transform mb-2" />
           <span class="text-xs font-bold text-slate-800">WhatsApp Broadcast</span>
         </button>
-        <button class="p-4 bg-white hover:bg-blue-50/50 border border-slate-100 rounded-2xl flex flex-col items-center justify-center text-center transition-all duration-200 shadow-sm hover:shadow group">
+        <button @click="isDeploymentModalOpen = true" class="p-4 bg-white hover:bg-blue-50/50 border border-slate-100 rounded-2xl flex flex-col items-center justify-center text-center transition-all duration-200 shadow-sm hover:shadow group">
           <Server class="w-6 h-6 text-amber-500 group-hover:scale-110 transition-transform mb-2" />
           <span class="text-xs font-bold text-slate-800">Deployment Status</span>
         </button>
-        <button class="p-4 bg-white hover:bg-blue-50/50 border border-slate-100 rounded-2xl flex flex-col items-center justify-center text-center transition-all duration-200 shadow-sm hover:shadow group">
+        <button @click="isSecurityModalOpen = true" class="p-4 bg-white hover:bg-blue-50/50 border border-slate-100 rounded-2xl flex flex-col items-center justify-center text-center transition-all duration-200 shadow-sm hover:shadow group">
           <Lock class="w-6 h-6 text-rose-500 group-hover:scale-110 transition-transform mb-2" />
           <span class="text-xs font-bold text-slate-800">Security Center</span>
         </button>
@@ -479,6 +484,114 @@ const regularSeries = [
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- DEVELOPER ACTION MODALS                    -->
+    <!-- ========================================== -->
+
+    <!-- Deployment Status Modal -->
+    <div v-if="isDeploymentModalOpen" class="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-2xl p-6 shadow-2xl relative border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-200">
+        <button @click="isDeploymentModalOpen = false" class="absolute right-4 top-4 text-slate-400 hover:text-slate-600 transition-colors">
+          <X class="w-5 h-5" />
+        </button>
+        
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center">
+          <Server class="w-6 h-6 mr-2.5 text-amber-500" /> Edge Deployment Status
+        </h2>
+        
+        <div class="space-y-4">
+          <div class="flex justify-between items-center pb-2.5 border-b border-slate-100 dark:border-slate-800">
+            <span class="text-xs font-semibold text-slate-500">Environment</span>
+            <span class="text-xs font-bold text-slate-800 dark:text-slate-200 bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md border border-emerald-100">Production (Cloudflare Pages)</span>
+          </div>
+          <div class="flex justify-between items-center pb-2.5 border-b border-slate-100 dark:border-slate-800">
+            <span class="text-xs font-semibold text-slate-500">Active Routing Node</span>
+            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Jakarta, Indonesia (CGK Edge)</span>
+          </div>
+          <div class="flex justify-between items-center pb-2.5 border-b border-slate-100 dark:border-slate-800">
+            <span class="text-xs font-semibold text-slate-500">SaaS Framework</span>
+            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Vite + Vue 3 (SPA)</span>
+          </div>
+          <div class="flex justify-between items-center pb-2.5 border-b border-slate-100 dark:border-slate-800">
+            <span class="text-xs font-semibold text-slate-500">Serverless Backend</span>
+            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Cloudflare Workers + Hono (Router)</span>
+          </div>
+          <div class="flex justify-between items-center pb-2.5 border-b border-slate-100 dark:border-slate-800">
+            <span class="text-xs font-semibold text-slate-500">Database Engine</span>
+            <span class="text-xs font-bold text-slate-800 dark:text-slate-200 font-mono">Cloudflare D1 (Distributed SQLite)</span>
+          </div>
+          <div class="flex justify-between items-center pb-2.5 border-b border-slate-100 dark:border-slate-800">
+            <span class="text-xs font-semibold text-slate-500">Compatibility Date</span>
+            <span class="text-xs font-bold text-slate-800 dark:text-slate-200 font-mono">2024-03-20</span>
+          </div>
+          <div class="flex justify-between items-center pb-2.5 border-b border-slate-100 dark:border-slate-800">
+            <span class="text-xs font-semibold text-slate-500">Active Branch</span>
+            <span class="text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-md font-mono">main</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-semibold text-slate-500">SSL Status</span>
+            <span class="text-xs font-bold text-emerald-600 flex items-center"><ShieldCheck class="w-4 h-4 mr-1 text-emerald-500" /> Active (Cloudflare Universal SSL)</span>
+          </div>
+        </div>
+        
+        <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+          <button @click="isDeploymentModalOpen = false" class="px-5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-xs transition-colors">Tutup</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Security Center Modal -->
+    <div v-if="isSecurityModalOpen" class="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-2xl p-6 shadow-2xl relative border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-200">
+        <button @click="isSecurityModalOpen = false" class="absolute right-4 top-4 text-slate-400 hover:text-slate-600 transition-colors">
+          <X class="w-5 h-5" />
+        </button>
+        
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center">
+          <Lock class="w-6 h-6 mr-2.5 text-rose-500" /> SaaS Security Center
+        </h2>
+        
+        <div class="space-y-4">
+          <div class="flex justify-between items-center pb-2.5 border-b border-slate-100 dark:border-slate-800">
+            <span class="text-xs font-semibold text-slate-500">Cloudflare WAF Shield</span>
+            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-md">Activated</span>
+          </div>
+          <div class="flex justify-between items-center pb-2.5 border-b border-slate-100 dark:border-slate-800">
+            <span class="text-xs font-semibold text-slate-500">DDOS Mitigation Protection</span>
+            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-md">High (Automatic Edge Dropping)</span>
+          </div>
+          <div class="flex justify-between items-center pb-2.5 border-b border-slate-100 dark:border-slate-800">
+            <span class="text-xs font-semibold text-slate-500">HTTPS Transport Policy</span>
+            <span class="text-xs font-bold text-slate-800 dark:text-slate-200 font-mono">TLS 1.3 Enforced + HSTS Active</span>
+          </div>
+          <div class="flex justify-between items-center pb-2.5 border-b border-slate-100 dark:border-slate-800">
+            <span class="text-xs font-semibold text-slate-500">IP Rate Limiting Protocol</span>
+            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Enabled (Max 120 requests/minute/IP)</span>
+          </div>
+          <div class="flex justify-between items-center pb-2.5 border-b border-slate-100 dark:border-slate-800">
+            <span class="text-xs font-semibold text-slate-500">CORS Policy Restriction</span>
+            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Restricted to *.pages.dev & custom domains</span>
+          </div>
+          <div class="flex justify-between items-center pb-2.5 border-b border-slate-100 dark:border-slate-800">
+            <span class="text-xs font-semibold text-slate-500">API Protection CSRF Tokens</span>
+            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-md">Enforced</span>
+          </div>
+          <div class="flex justify-between items-center pb-2.5 border-b border-slate-100 dark:border-slate-800">
+            <span class="text-xs font-semibold text-slate-500">Global Vulnerability Status</span>
+            <span class="text-xs font-bold text-emerald-600 flex items-center"><ShieldCheck class="w-4 h-4 mr-1 text-emerald-500" /> Clean Scan</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-semibold text-slate-500">Incident Blocks (last 24 hours)</span>
+            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">0 Blocks (No threat events)</span>
+          </div>
+        </div>
+        
+        <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+          <button @click="isSecurityModalOpen = false" class="px-5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-xs transition-colors">Tutup</button>
         </div>
       </div>
     </div>
