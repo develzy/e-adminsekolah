@@ -149,6 +149,24 @@ const getFilteredGroups = computed(() => {
   const role = authStore.user?.role || 'guru'
   const activeLevel = authStore.school?.level?.toUpperCase() || ''
   
+  if (role === 'super_admin') {
+    return [
+      {
+        title: 'DEVELOPER PANEL',
+        items: [
+          { name: 'Dashboard Dev', icon: LayoutDashboard, path: '/dashboard', roles: ['super_admin'] },
+          { name: 'Kelola Tenant Sekolah', icon: Building, path: '/dashboard/schools', roles: ['super_admin'] }
+        ]
+      },
+      {
+        title: 'SYSTEM SETTINGS',
+        items: [
+          { name: 'Pengaturan Sistem', icon: Settings, path: '/dashboard/settings', roles: ['super_admin'] }
+        ]
+      }
+    ]
+  }
+  
   return menuGroups.map(group => {
     const filteredItems = group.items.filter(item => {
       // 1. Check user role
@@ -248,25 +266,32 @@ const getInitials = (name: string) => {
         </button>
         
         <div class="hidden lg:flex items-center space-x-4">
-          <div class="flex items-center space-x-2">
-            <span class="text-xs font-bold text-text/60">Sesi Sekolah:</span>
-            <select 
-              v-if="schools.length > 0" 
-              v-model="selectedSchoolId" 
-              @change="handleSchoolChange"
-              class="input-modern py-1 px-3 text-xs bg-background font-bold text-primary w-52"
-            >
-              <option v-for="sch in schools" :key="sch.id" :value="sch.id">
-                🏫 {{ sch.name }} ({{ sch.level }})
-              </option>
-            </select>
-            <span v-else class="text-xs text-text/50 font-bold bg-background px-3 py-1.5 rounded-lg border border-border">
-              🏫 {{ authStore.school?.name || 'SDN Kalisalak' }} ({{ authStore.school?.level || 'SD' }})
+          <div v-if="authStore.user?.role === 'super_admin'" class="flex items-center space-x-2">
+            <span class="text-xs font-extrabold bg-blue-600/10 border border-blue-500/25 text-blue-600 px-3.5 py-1.5 rounded-xl">
+              🛡️ Konsol Pengembang Global (SaaS Dev Mode)
             </span>
           </div>
-          <span class="text-xs text-text/50 font-bold bg-background px-3 py-1.5 rounded-lg border border-border">
-            🗓️ Tahun Ajaran: 2026/2027 Ganjil
-          </span>
+          <div v-else class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2">
+              <span class="text-xs font-bold text-text/60">Sesi Sekolah:</span>
+              <select 
+                v-if="schools.length > 0" 
+                v-model="selectedSchoolId" 
+                @change="handleSchoolChange"
+                class="input-modern py-1 px-3 text-xs bg-background font-bold text-primary w-52"
+              >
+                <option v-for="sch in schools" :key="sch.id" :value="sch.id">
+                  🏫 {{ sch.name }} ({{ sch.level }})
+                </option>
+              </select>
+              <span v-else class="text-xs text-text/50 font-bold bg-background px-3 py-1.5 rounded-lg border border-border">
+                🏫 {{ authStore.school?.name || 'SDN Kalisalak' }} ({{ authStore.school?.level || 'SD' }})
+              </span>
+            </div>
+            <span class="text-xs text-text/50 font-bold bg-background px-3 py-1.5 rounded-lg border border-border">
+              🗓️ Tahun Ajaran: 2026/2027 Ganjil
+            </span>
+          </div>
         </div>
 
         <div class="flex items-center space-x-4 ml-auto">
