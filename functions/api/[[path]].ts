@@ -78,6 +78,141 @@ app.post('/auth/login', async (c) => {
   return c.json({ error: 'Email atau password salah.' }, 401)
 })
 
+app.post('/auth/google-login', async (c) => {
+  const body = await c.req.json()
+  
+  if (body.email) {
+    try {
+      const user = await c.env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(body.email).first<any>()
+      
+      if (user) {
+        let school = null
+        if (user.school_id) {
+          school = await c.env.DB.prepare('SELECT * FROM schools WHERE id = ?').bind(user.school_id).first<any>()
+        }
+        
+        const payload = {
+          email: user.email,
+          role: user.role,
+          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24, // 24 hours
+        }
+        
+        const secret = c.env.JWT_SECRET || 'fallback-secret-for-dev'
+        const token = await sign(payload, secret)
+        return c.json({ 
+          token, 
+          name: user.name, 
+          role: user.role, 
+          email: user.email, 
+          user: { email: user.email, name: user.name, role: user.role },
+          school: school
+        })
+      }
+    } catch (error: any) {
+      return c.json({ error: 'Database authentication error', details: error.message }, 500)
+    }
+  }
+  
+  return c.json({ error: 'Email Google tidak terdaftar.' }, 401)
+})
+
+app.post('/auth/register', async (c) => {
+  try {
+    const body = await c.req.json()
+    const { name, nip, level, packageType, username, password } = body
+
+    if (!name || !username || !password || !level) {
+      return c.json({ error: 'Data registrasi tidak lengkap.' }, 400)
+    }
+
+    // Check if username (email) already exists
+    const existingUser = await c.env.DB.prepare('SELECT id FROM users WHERE email = ?').bind(username).first()
+    if (existingUser) {
+      return c.json({ error: 'Username atau email sudah terdaftar.' }, 409)
+    }
+
+    const schoolId = crypto.randomUUID()
+    const userId = crypto.randomUUID()
+    const teacherId = crypto.randomUUID()
+    const academicYearId = crypto.randomUUID()
+    const classId = crypto.randomUUID()
+
+    // 1. Insert School
+    const schoolName = `${level} ${name.split(' ')[0]} ERP`
+    await c.env.DB.prepare(
+      'INSERT INTO schools (id, name, level, status) VALUES (?, ?, ?, ?)'
+    ).bind(schoolId, schoolName, level, 'active').run()
+
+    // 2. Hash Password
+    const msgBuffer = new TextEncoder().encode(password)
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer)
+    const hashArray = Array.from(new Uint8Array(hashBuffer))
+    const passwordHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+
+    // 3. Insert User
+    await c.env.DB.prepare(
+      'INSERT INTO users (id, school_id, name, email, password_hash, role, status) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    ).bind(userId, schoolId, name, username, passwordHash, 'admin_sekolah', 'active').run()
+
+    // 4. Insert Teacher
+    await c.env.DB.prepare(
+      'INSERT INTO teachers (id, school_id, user_id, nip, name, status) VALUES (?, ?, ?, ?, ?, ?)'
+    ).bind(teacherId, schoolId, userId, nip || '', name, 'active').run()
+
+    // 5. Insert Academic Year
+    await c.env.DB.prepare(
+      'INSERT INTO academic_years (id, school_id, name, semester, is_active) VALUES (?, ?, ?, ?, ?)'
+    ).bind(academicYearId, schoolId, '2026/2027', 'Ganjil', 1).run()
+
+    // 6. Insert Class
+    let className = 'Kelas X-A'
+    let classLevel = '10'
+    if (level === 'SD') {
+      className = 'Kelas I-A'
+      classLevel = '1'
+    } else if (level === 'SMP') {
+      className = 'Kelas VII-A'
+      classLevel = '7'
+    } else if (level === 'TK' || level === 'PAUD') {
+      className = 'Kelompok A'
+      classLevel = 'TK'
+    }
+    await c.env.DB.prepare(
+      'INSERT INTO classes (id, school_id, academic_year_id, teacher_id, name, level) VALUES (?, ?, ?, ?, ?, ?)'
+    ).bind(classId, schoolId, academicYearId, teacherId, className, classLevel).run()
+
+    // 7. Audit Log
+    const auditId = crypto.randomUUID()
+    await c.env.DB.prepare(
+      'INSERT INTO audit_logs (id, school_id, user_id, action, details) VALUES (?, ?, ?, ?, ?)'
+    ).bind(auditId, schoolId, userId, 'REGISTER_SCHOOL', `Mendaftarkan sekolah baru ${schoolName} dengan paket ${packageType}`).run()
+
+    // Generate Token
+    const payload = {
+      email: username,
+      role: 'admin_sekolah',
+      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24, // 24 hours
+    }
+    
+    const secret = c.env.JWT_SECRET || 'fallback-secret-for-dev'
+    const token = await sign(payload, secret)
+
+    const school = { id: schoolId, name: schoolName, level, status: 'active' }
+
+    return c.json({
+      token,
+      name,
+      role: 'admin_sekolah',
+      email: username,
+      user: { email: username, name, role: 'admin_sekolah' },
+      school
+    }, 201)
+
+  } catch (error: any) {
+    return c.json({ error: 'Gagal melakukan pendaftaran sekolah.', details: error.message }, 500)
+  }
+})
+
 // Protected routes middleware
 // app.use('/*', jwt({ secret: (c) => c.env.JWT_SECRET }))
 
@@ -394,6 +529,8 @@ app.post('/grades', async (c) => {
   }
 })
 
+
+
 // AI Endpoint
 // AI Endpoint
 app.post('/ai/generate-erp', async (c) => {
@@ -529,7 +666,10 @@ app.post('/ai/generate-erp', async (c) => {
     })
   } catch (error: any) {
     console.error('AI Error:', error)
-    return c.json({ status: 'error', message: error.message || 'Gagal generate AI' }, 500)
+    return c.json({
+      status: 'error',
+      message: 'Gagal menghubungi AI: API Key Gemini tidak valid atau belum dikonfigurasi. Silakan hubungi Administrator untuk mengatur GEMINI_API_KEY di dashboard Cloudflare Pages Anda.'
+    }, 500)
   }
 })
 
