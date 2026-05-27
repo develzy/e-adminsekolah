@@ -22,7 +22,7 @@ INSERT OR IGNORE INTO classes (id, school_id, academic_year_id, teacher_id, name
 -- Insert Users
 -- Developer/Super Admin: develzy.im (password: 25042023 -> 130d70d83f9cef571ce8cbf838247e207472f1cdda818b592543d4090e027713)
 INSERT OR REPLACE INTO users (id, school_id, name, email, password_hash, role, status) VALUES
-('user-developer', NULL, 'DEVELZY Developer', 'develzy.im', '130d70d83f9cef571ce8cbf838247e207472f1cdda818b592543d4090e027713', 'super_admin', 'active');
+('user-developer', NULL, 'DEVELZY Developer', 'dev@elzy.im', '130d70d83f9cef571ce8cbf838247e207472f1cdda818b592543d4090e027713', 'super_admin', 'active');
 
 -- TK Demo Admin: tk@develzy.im (password: tk123 -> 65d262fd945909f7c1250533b26217dfa703e6271c72ecab63ee7e59bcee6a15)
 INSERT OR REPLACE INTO users (id, school_id, name, email, password_hash, role, status) VALUES
