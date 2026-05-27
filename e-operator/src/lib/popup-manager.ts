@@ -46,11 +46,11 @@ export class PopupManager {
       },
     });
 
-    const dismissedIds = new Set(dismissedPopups.map((dp) => dp.popupId));
+    const dismissedIds = new Set(dismissedPopups.map((dp: { popupId: string }) => dp.popupId));
 
     // Convert and filter based on scheduler target and dismissal
     const formatted: PopupData[] = popups
-      .map((p) => ({
+      .map((p: any) => ({
         id: p.id,
         title: p.title,
         message: p.message,
@@ -65,7 +65,7 @@ export class PopupManager {
         endDate: p.endDate,
         createdAt: p.createdAt,
       }))
-      .filter((p) => !dismissedIds.has(p.id));
+      .filter((p: PopupData) => !dismissedIds.has(p.id));
 
     return PopupScheduler.getTargetedPopups(formatted, role, schoolLevel, tenantId);
   }

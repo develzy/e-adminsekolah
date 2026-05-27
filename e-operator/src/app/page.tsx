@@ -112,7 +112,7 @@ export default function Home() {
       case 'tutorial':
         enqueue({
           id: 'tutorial-pop',
-          title: 'Panduan Eduadmin',
+          title: 'Panduan E-Operator',
           message: 'Mulai ikuti tur panduan menggunakan portal admin.',
           type: 'tutorial',
           priority: 200,
@@ -252,7 +252,7 @@ export default function Home() {
             <Zap className="w-full h-full text-white" />
           </div>
           <div>
-            <span className="text-sm font-black tracking-tight text-white uppercase">DEVELZY <span className="text-yellow-400">EDUADMIN</span></span>
+            <span className="text-sm font-black tracking-tight text-white uppercase">e-operator <span className="text-yellow-400">by develzy</span></span>
             <p className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Enterprise SaaS Portal • v3.0</p>
           </div>
         </div>
@@ -279,7 +279,7 @@ export default function Home() {
               Enterprise Popup & Queue System Console
             </h1>
             <p className="text-slate-400 text-xs mt-2 leading-relaxed">
-              Konsol manajemen dan pengujian sistem antrian pop-up global SaaS DEVELZY EDUADMIN. Gunakan panel di bawah ini untuk mensimulasikan otentikasi user, AI generator loading, warning disclaimers, dan 20 jenis pengumuman real-time lainnya.
+              Konsol manajemen dan pengujian sistem antrian pop-up global SaaS e-operator by develzy. Gunakan panel di bawah ini untuk mensimulasikan otentikasi user, AI generator loading, warning disclaimers, dan 20 jenis pengumuman real-time lainnya.
             </p>
           </div>
           
@@ -516,7 +516,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="py-6 border-t border-slate-800 text-center text-xs text-slate-500 relative z-10 bg-slate-950/40 backdrop-blur-md">
-        © 2026 DEVELZY EDUADMIN. All rights reserved. Managed globally via Cloudflare Edge Network.
+        © 2026 e-operator by develzy. All rights reserved. Managed globally via Cloudflare Edge Network.
       </footer>
     </div>
   );

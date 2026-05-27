@@ -14,7 +14,7 @@ interface WelcomePopupProps {
 export function WelcomePopup({ popup, onDismiss, onStartTutorial }: WelcomePopupProps) {
   const { payload } = popup;
   const userName = payload?.userName || 'Pengguna';
-  const schoolName = payload?.schoolName || 'Portal Eduadmin';
+  const schoolName = payload?.schoolName || 'Portal E-Operator';
   const role = payload?.role || 'Guru';
   const level = payload?.level || 'SMA';
 
@@ -34,7 +34,7 @@ export function WelcomePopup({ popup, onDismiss, onStartTutorial }: WelcomePopup
         >
           <div className="w-full h-full bg-slate-900 rounded-[14px] flex flex-col items-center justify-center p-2 border border-white/10">
             <span className="text-lg font-black tracking-tighter text-white">DEVELZY</span>
-            <span className="text-[7px] font-black uppercase text-yellow-400 tracking-widest mt-0.5">EDUADMIN</span>
+            <span className="text-[7px] font-black uppercase text-yellow-400 tracking-widest mt-0.5">E-OPERATOR</span>
           </div>
           <motion.div 
             animate={{ y: [0, -4, 0] }}

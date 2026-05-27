@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DEVELZY EDUADMIN - Enterprise SaaS Portal",
+  title: "e-operator by develzy - Enterprise SaaS Portal",
   description: "AI-Powered School Administration System",
 };
 

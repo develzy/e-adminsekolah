@@ -58,7 +58,7 @@ export function PopupProvider() {
                 usePopupStore.getState().enqueue({
                   id: 'tutorial-onboarding',
                   title: 'Onboarding Tutorial',
-                  message: 'Panduan navigasi aplikasi SaaS DEVELZY EDUADMIN.',
+                  message: 'Panduan navigasi aplikasi SaaS e-operator by develzy.',
                   type: 'tutorial',
                   priority: 200,
                   dismissible: true,
